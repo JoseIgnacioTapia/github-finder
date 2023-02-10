@@ -8,6 +8,7 @@ const GITHUB_URL = import.meta.env.VITE_APP_GITHUB_URL;
 export const GithubProvider = ({ children }) => {
   const initialState = {
     users: [],
+    user: {},
     loading: false,
   };
 
@@ -23,11 +24,28 @@ export const GithubProvider = ({ children }) => {
 
     const response = await fetch(`${GITHUB_URL}/search/users?${params}`);
 
-    const { items } = await response.json();
+    if (response.status === 400) {
+      window.location = '/notfound';
+    } else {
+      const data = await response.json();
+
+      dispatch({
+        type: 'GET_USERS',
+        payload: data.items,
+      });
+    }
+  };
+
+  // Get single user
+  const getUser = async login => {
+    setLoading();
+
+    const response = await fetch(`${GITHUB_URL}/users/${login}`);
+    const data = await response.json();
 
     dispatch({
-      type: 'GET_USERS',
-      payload: items,
+      type: 'GET_USER',
+      payload: data,
     });
   };
 
@@ -46,8 +64,10 @@ export const GithubProvider = ({ children }) => {
     <GithubContext.Provider
       value={{
         users: state.users,
+        user: state.user,
         loading: state.loading,
         searchUsers,
+        getUser,
         clearUsers,
       }}
     >
