@@ -25,4 +25,4 @@ export const AlertProvider = ({ children }) => {
   );
 };
 
-export default AlertProvider;
+export default AlertContext;
