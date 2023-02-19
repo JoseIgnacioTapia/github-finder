@@ -1,10 +1,16 @@
-import { useContext } from 'react';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { getGithubUsersItems } from '../../features/github/githubUsers.js';
 import Spinner from '../layout/Spinner';
 import UserItem from './UserItem';
-import GithubContext from '../../context/github/GithubContext';
 
 function UserResults() {
-  const { users, loading } = useContext(GithubContext);
+  const { users, loading } = useSelector(state => state.githubApi);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getGithubUsersItems());
+  }, [dispatch]);
 
   if (!loading) {
     return (
