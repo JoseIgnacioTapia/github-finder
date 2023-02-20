@@ -1,24 +1,21 @@
-import { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams, Link } from 'react-router-dom';
+import { getUserAndRepos } from '../features/github/githubUsers.js';
 import { FaCodepen, FaStore, FaUserFriends, FaUsers } from 'react-icons/fa';
-import GithubContext from '../context/github/GithubContext';
+
 import Spinner from '../components/layout/Spinner';
 import ReposList from '../components/repos/ReposList';
-import { getUserAndRepos } from '../context/github/GithubActions.js';
 
 function User() {
-  const { user, loading, repos, dispatch } = useContext(GithubContext);
+  const { user, loading, repos } = useSelector(state => state.githubApi);
+
+  const dispatch = useDispatch();
 
   const params = useParams();
 
   useEffect(() => {
-    dispatch({ type: 'SET_LOADING' });
-    const getUserData = async () => {
-      const userData = await getUserAndRepos(params.login);
-      dispatch({ type: 'GET_USER_AND_REPOS', payload: userData });
-    };
-
-    getUserData();
+    dispatch(getUserAndRepos(params.login));
   }, [dispatch, params.login]);
 
   const {

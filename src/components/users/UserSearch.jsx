@@ -1,13 +1,12 @@
-import { useState, useContext } from 'react';
-import GithubContext from '../../context/github/GithubContext';
-import AlertContext from '../../context/alert/AlertContext';
-import { searchUsers } from '../../context/github/GithubActions';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { getGithubUsersSearch } from '../../features/github/githubUsers';
+import { setAlert, clearAlert } from '../../features/alert/alert';
 
 function UserSearch() {
   const [text, setText] = useState('');
 
-  const { users, dispatch } = useContext(GithubContext);
-  const { setAlert } = useContext(AlertContext);
+  const dispatch = useDispatch();
 
   const handleChange = e => setText(e.target.value);
 
@@ -15,17 +14,16 @@ function UserSearch() {
     e.preventDefault();
 
     if (text === '') {
-      setAlert('Please enter something', 'error');
+      dispatch(setAlert({ message: 'Please enter something', type: 'error' }));
+
+      setTimeout(() => {
+        dispatch(clearAlert());
+      }, 3000);
     } else {
-      const users = await searchUsers(text);
-      dispatch({ type: 'GET_USERS', payload: users });
+      dispatch(getGithubUsersSearch(text));
 
       setText('');
     }
-  };
-
-  const handleReset = () => {
-    dispatch({ type: 'CLEAR_USERS' });
   };
 
   return (
@@ -51,13 +49,6 @@ function UserSearch() {
           </div>
         </form>
       </div>
-      {users.length > 0 && (
-        <div>
-          <button className="btn btn-ghost btn-lg" onClick={handleReset}>
-            Clear
-          </button>
-        </div>
-      )}
     </div>
   );
 }
