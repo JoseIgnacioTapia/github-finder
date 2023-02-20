@@ -42,6 +42,23 @@ export const getGithubUsersSearch = createAsyncThunk(
   }
 );
 
+// Get user & repos
+export const getUserAndRepos = createAsyncThunk(
+  'github/getUserAndRepos',
+  async (login, thunkAPI) => {
+    try {
+      const [user, repos] = await Promise.all([
+        axios.get(`${GITHUB_URL}/users/${login}`),
+        axios.get(`${GITHUB_URL}/users/${login}/repos`),
+      ]);
+
+      return { user: user.data, repos: repos.data };
+    } catch (error) {
+      return thunkAPI.rejectWithValue('Something went wrong');
+    }
+  }
+);
+
 const githubUsersSlice = createSlice({
   name: 'githubUsers',
   initialState,
@@ -64,6 +81,20 @@ const githubUsersSlice = createSlice({
       .addCase(getGithubUsersSearch.fulfilled, (state, action) => {
         state.loading = false;
         state.users = action.payload;
+      })
+      .addCase(getGithubUsersSearch.rejected, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(getUserAndRepos.pending, state => {
+        state.loading = true;
+      })
+      .addCase(getUserAndRepos.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.repos = action.payload.repos;
+      })
+      .addCase(getUserAndRepos.rejected, (state, action) => {
+        state.loading = true;
       });
   },
 });
