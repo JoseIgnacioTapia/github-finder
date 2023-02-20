@@ -1,13 +1,16 @@
 import { useState, useContext } from 'react';
-import GithubContext from '../../context/github/GithubContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { getGithubUsersSearch } from '../../features/github/githubUsers';
 import AlertContext from '../../context/alert/AlertContext';
-import { searchUsers } from '../../context/github/GithubActions';
 
 function UserSearch() {
   const [text, setText] = useState('');
 
-  const { users, dispatch } = useContext(GithubContext);
+  const dispatch = useDispatch();
+
   const { setAlert } = useContext(AlertContext);
+
+  const { users } = useSelector(state => state.githubApi);
 
   const handleChange = e => setText(e.target.value);
 
@@ -17,8 +20,7 @@ function UserSearch() {
     if (text === '') {
       setAlert('Please enter something', 'error');
     } else {
-      const users = await searchUsers(text);
-      dispatch({ type: 'GET_USERS', payload: users });
+      dispatch(getGithubUsersSearch(text));
 
       setText('');
     }
