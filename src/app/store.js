@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-import githubUsersSlice from '../features/github/githubUsers';
+import rootReducer from './rootReducer';
 
-export const store = configureStore({
-  reducer: {
-    githubApi: githubUsersSlice,
-  },
+const store = configureStore({
+  reducer: rootReducer,
 });
+
+export default store;

@@ -1,8 +1,7 @@
-import { useContext } from 'react';
-import AlertContext from '../../context/alert/AlertContext';
+import { useSelector } from 'react-redux';
 
 function Alert() {
-  const { alert } = useContext(AlertContext);
+  const alert = useSelector(state => state.alert);
 
   return (
     alert !== null && (
@@ -22,7 +21,7 @@ function Alert() {
           </svg>
         )}
         <p className="flex-1 text-base font-semibold leading-7 text-white">
-          <strong>{alert.msg}</strong>
+          <strong>{alert.message}</strong>
         </p>
       </p>
     )

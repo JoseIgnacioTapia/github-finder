@@ -1,16 +1,12 @@
-import { useState, useContext } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { getGithubUsersSearch } from '../../features/github/githubUsers';
-import AlertContext from '../../context/alert/AlertContext';
+import { setAlert, clearAlert } from '../../features/alert/alert';
 
 function UserSearch() {
   const [text, setText] = useState('');
 
   const dispatch = useDispatch();
-
-  const { setAlert } = useContext(AlertContext);
-
-  const { users } = useSelector(state => state.githubApi);
 
   const handleChange = e => setText(e.target.value);
 
@@ -18,16 +14,16 @@ function UserSearch() {
     e.preventDefault();
 
     if (text === '') {
-      setAlert('Please enter something', 'error');
+      dispatch(setAlert({ message: 'Please enter something', type: 'error' }));
+
+      setTimeout(() => {
+        dispatch(clearAlert());
+      }, 3000);
     } else {
       dispatch(getGithubUsersSearch(text));
 
       setText('');
     }
-  };
-
-  const handleReset = () => {
-    dispatch({ type: 'CLEAR_USERS' });
   };
 
   return (
@@ -53,13 +49,6 @@ function UserSearch() {
           </div>
         </form>
       </div>
-      {users.length > 0 && (
-        <div>
-          <button className="btn btn-ghost btn-lg" onClick={handleReset}>
-            Clear
-          </button>
-        </div>
-      )}
     </div>
   );
 }
